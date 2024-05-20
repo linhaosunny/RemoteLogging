@@ -107,6 +107,16 @@
                 ws.send(JSON.stringify(data));
             }
         }
+            
+        function getDeviceInfo() {
+            if(ws.readyState === WebSocket.OPEN) {
+                var data = {
+                    type: 'info',
+                    content: 'Get Device',
+                };
+                ws.send(JSON.stringify(data));
+            }
+        }
         </script>
         <style>
             .container {
@@ -230,6 +240,7 @@
                         </select>
                     </div>
                     <button id="resetDeviceButton" class="button" onclick="resetDevice()">Reset Device</button>
+                    <button id="getDeviceInfoButton" class="button" onclick="getDeviceInfo()">Get Device</button>
                 </div>
             </div>
             <div id="panel">
