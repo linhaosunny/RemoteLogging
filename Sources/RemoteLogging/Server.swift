@@ -8,9 +8,9 @@ public struct WebClientMessage: Codable {
         case info
     }
     
-    var type: WebMessageType
+    public var type: WebMessageType
     
-    var content: String
+    public var content: String
 }
 
 public struct LogMessage: Codable {
