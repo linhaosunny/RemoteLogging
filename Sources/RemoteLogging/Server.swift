@@ -2,7 +2,7 @@ import Telegraph
 import Foundation
 
 public struct WebClientMessage: Codable {
-    enum WebMessageType: String, Codable {
+    public enum WebMessageType: String, Codable {
         case reset
         
         case info
