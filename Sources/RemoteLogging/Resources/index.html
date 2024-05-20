@@ -7,12 +7,14 @@
         <script type="text/javascript">
         let isStart = true;
         let countOfTags = 0;
+        var ws;
         const levelText = ['🔍 trace', '🛠 debug', '💬 info', '🗯 notice', '⚠️ warning', '❌ error', '💥 critical'];
         function websocketConnect() {
             if ("WebSocket" in window) {
                 let hostname = window.location.hostname;
                 let port = window.location.port;
-                let ws = new WebSocket("ws://" + hostname + ":" + port);
+                ws = new WebSocket("ws://" + hostname + ":" + port);
+                window.websocket = ws;
                 ws.onopen = function () {
                     document.getElementById("connectionStatus").innerText = "🟢";
                 }
@@ -94,6 +96,16 @@
 
             let button = document.getElementById("toggleButton");
             button.innerHTML = isStart ? "stop" : "start";
+        }
+            
+        function resetDevice() {
+            if(ws.readyState === WebSocket.OPEN) {
+                var data = {
+                    type: 'clearAndReset',
+                    id: 'Device'
+                };
+                ws.send(JSON.stringify(data));
+            }
         }
         </script>
         <style>
@@ -217,6 +229,7 @@
                             <option value="critical">💥 critical</option>
                         </select>
                     </div>
+                    <button id="ResetDeviceButton" class="button" onclick="resetDevice()">stop</button>
                 </div>
             </div>
             <div id="panel">
