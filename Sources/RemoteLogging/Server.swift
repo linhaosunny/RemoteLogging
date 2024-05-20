@@ -1,6 +1,16 @@
 import Telegraph
 import Foundation
 
+public struct WebClientMessage: Codable {
+    enum WebMessageType: Codable {
+        case reset
+    }
+    
+    var type: WebMessageType
+    
+    var content: String
+}
+
 public struct LogMessage: Codable {
     var type = MessageType.log
     /// iso8601
@@ -27,9 +37,11 @@ public class LocalServer: RemoteLogServer {
     public static var `default` = LocalServer()
     
     public init() { }
-    
+     
     private let httpServer = Server()
     
+    private var clientMessageAction: ((_ message: WebClientMessage) -> Void)?
+   
     public func runServer(port: Int = 9777) {
         
         let bundleName = "RemoteLogging_RemoteLogging"
@@ -74,6 +86,10 @@ public class LocalServer: RemoteLogServer {
     public func send(message: LogMessage) {
         send(text: message.jsonString ?? "")
     }
+    
+    public func onWebClient(_ action:@escaping ((_ message: WebClientMessage) -> Void)) {
+        self.clientMessageAction = action
+    }
 }
 
 extension LocalServer: ServerWebSocketDelegate {
@@ -86,6 +102,23 @@ extension LocalServer: ServerWebSocketDelegate {
     }
     
     public func server(_ server: Server, webSocket: WebSocket, didReceiveMessage message: WebSocketMessage) {
+        
+        switch message.payload {
+        case .text(let content):
+            guard let data = content.data(using: .utf8), let clientMessage = try? JSONDecoder().decode(WebClientMessage.self, from: data) else {
+                return
+            }
+            
+            clientMessageAction?(clientMessage)
+        case .binary(let data):
+            guard let clientMessage = try? JSONDecoder().decode(WebClientMessage.self, from: data) else {
+                return
+            }
+            
+            clientMessageAction?(clientMessage)
+        default:
+            break
+        }
     }
     
     public func server(_ server: Server, webSocketDidDisconnect webSocket: WebSocket, error: Error?) {

@@ -101,8 +101,8 @@
         function resetDevice() {
             if(ws.readyState === WebSocket.OPEN) {
                 var data = {
-                    type: 'clearAndReset',
-                    id: 'Device'
+                    type: 'reset',
+                    content: 'Reset Device',
                 };
                 ws.send(JSON.stringify(data));
             }
@@ -229,7 +229,7 @@
                             <option value="critical">💥 critical</option>
                         </select>
                     </div>
-                    <button id="ResetDeviceButton" class="button" onclick="resetDevice()">stop</button>
+                    <button id="resetDeviceButton" class="button" onclick="resetDevice()">Reset Device</button>
                 </div>
             </div>
             <div id="panel">
